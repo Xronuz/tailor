@@ -23,8 +23,17 @@ import { BarChart } from '../components/charts/BarChart'
 import { ShareBars } from '../components/charts/ShareBars'
 import { StatusBadge } from '../components/StatusBadge'
 import { PageHead } from '../components/PageHead'
-import { ChartIcon } from '../components/icons'
+import { ChartIcon, DownloadIcon } from '../components/icons'
 import { Select } from '../components/Select'
+import {
+  buildReport,
+  monthPeriod,
+  ordersIn,
+  reportFilename,
+  yearPeriod,
+  type Period,
+} from '../lib/report'
+import { downloadWorkbook } from '../lib/xlsx'
 import type { Order } from '../lib/types'
 
 /**
@@ -303,6 +312,28 @@ export function Analytics() {
     )
   }
 
+  // Both reports follow the period the chart is set to, so what downloads is
+  // what the reader is looking at.
+  const yearReport = {
+    title: t('export.year'),
+    period: yearPeriod(from),
+    count: ordersIn(data, yearPeriod(from)).length,
+  }
+  const monthReport = {
+    title: t('export.month'),
+    period: monthPeriod(from, monthFull),
+    count: ordersIn(data, monthPeriod(from, monthFull)).length,
+  }
+
+  function download(period: Period) {
+    const sheets = buildReport(data, period, {
+      t,
+      monthName: monthFull,
+      formatDate: formatDateIn,
+    })
+    downloadWorkbook(sheets, reportFilename(period))
+  }
+
   const tabs: { key: View; label: string }[] = [
     { key: 'main', label: t('analytics.tabMain') },
     { key: 'breakdown', label: t('analytics.tabBreakdown') },
@@ -331,9 +362,9 @@ export function Analytics() {
       />
 
       {view === 'main' ? (
-        <>
-          {/* the first three sit over the wide column, the fourth over the side one */}
-          <div className="tiles">
+        <div className="analytics-main">
+          {/* three figures over the chart they belong to, sharing its width */}
+          <div className="analytics-main-wide">
             <div className="tiles-main">
               <Tile label={t('analytics.orders')} value={String(sums.orders)} to="/orders" />
               <Tile
@@ -351,16 +382,39 @@ export function Analytics() {
               />
             </div>
 
+            {renderPanel('daily', true)}
+          </div>
+
+          <div className="analytics-main-side">
             <Tile
               label={t('analytics.average')}
               value={shortMoney(sums.average)}
               sub={`${fullMoney(sums.average)} ${t('common.money')}`}
               to="/orders"
             />
-          </div>
 
-          <div className="analytics-main">{renderPanel('daily', true)}</div>
-        </>
+            {/* The same period the chart is showing, as a file for the books. */}
+            <div className="export-grid">
+              {([yearReport, monthReport] as const).map((report) => (
+                <button
+                  key={report.period.slug}
+                  type="button"
+                  className="btn export-btn"
+                  onClick={() => download(report.period)}
+                  disabled={report.count === 0}
+                >
+                  <DownloadIcon />
+                  <span className="export-btn-text">
+                    <strong>{report.title}</strong>
+                    <span className="export-btn-sub">
+                      {report.period.label} · {report.count} {t('analytics.ordersUnit')}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="analytics-grid">{BREAKDOWN.map((key) => renderPanel(key))}</div>
       )}

@@ -2276,7 +2276,9 @@ a.meta-chip:focus-visible {
 
 /* ---------- analytics ---------- */
 
-.tiles {
+/* The three running figures. On a wide screen they line up across the chart
+   below them; anywhere narrower they wrap on their own. */
+.tiles-main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 0.75rem;
@@ -2607,6 +2609,48 @@ a.meta-chip:focus-visible {
   font-size: 0.75rem;
 }
 
+/* ---------- report exports ----------
+   Two ways out of the shop: the year, and the month on screen. Each button
+   says what it is and how many orders it carries, so nobody downloads an
+   empty file to find out. */
+.export-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-3);
+  text-align: left;
+  padding: var(--space-3);
+}
+
+.export-btn svg {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+
+.export-btn-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.export-btn-sub {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+
+.export-btn:disabled {
+  opacity: 0.5;
+}
+
 @media (min-width: 1000px) and (min-height: 620px) {
   .page-analytics {
     height: calc(100dvh - 2 * var(--space-4) - var(--space-5));
@@ -2636,12 +2680,27 @@ a.meta-chip:focus-visible {
     min-height: 0;
   }
 
-  /* First view: the day chart alone under the tiles, taking all that is left. */
+  /* First view: three figures over the day chart in the wide column, the
+     average and its two exports down the side. */
   .analytics-main {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: var(--analytics-split);
+    gap: var(--space-3);
     flex: 1;
     min-height: 0;
+  }
+
+  .analytics-main-wide,
+  .analytics-main-side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 0;
+  }
+
+  /* The chart takes whatever the tiles leave. */
+  .analytics-main-wide > .card {
+    flex: 1;
   }
 
   /* Second view: the four breakdowns, two by two, sharing the screen evenly. */
@@ -2650,6 +2709,14 @@ a.meta-chip:focus-visible {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Two big targets under the average figure, sharing what is left of the
+     side column. */
+  .export-grid {
+    grid-template-rows: repeat(2, minmax(0, 1fr));
     flex: 1;
     min-height: 0;
   }
@@ -2707,7 +2774,7 @@ a.meta-chip:focus-visible {
   .analytics-body > .card,
   .analytics-side > .card,
   .analytics-bottom > .card,
-  .analytics-main > .card,
+  .analytics-main-wide > .card,
   .analytics-grid > .card {
     display: flex;
     flex-direction: column;
@@ -2778,12 +2845,6 @@ a.meta-chip:focus-visible {
     gap: var(--space-3);
   }
 
-  .page-analytics .tiles {
-    display: grid;
-    grid-template-columns: var(--analytics-split);
-    gap: var(--space-3);
-  }
-
   .tiles-main > * {
     min-width: 0;
   }
@@ -2809,14 +2870,12 @@ a.meta-chip:focus-visible {
   .analytics-side,
   .analytics-bottom,
   .analytics-main,
+  .analytics-main-wide,
+  .analytics-main-side,
   .analytics-grid {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-  }
-
-  .tiles-main {
-    display: contents;
   }
 }
 
