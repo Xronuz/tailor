@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# The order database, when the server runs straight from a checkout.
+server/*.db
