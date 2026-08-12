@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { listOrders, normalizePhone } from '../lib/db'
+import { fetchOrder } from '../lib/sync'
 import { useI18n } from '../lib/i18n'
 import { CopyId } from '../components/CopyId'
 import { PageHead } from '../components/PageHead'
@@ -22,20 +23,40 @@ export function Status() {
   const scanned = params.get('id') ?? ''
   const [query, setQuery] = useState(scanned)
   const [results, setResults] = useState<Order[] | null>(null)
+  // The server leg can take a moment on a phone's own connection, and a blank
+  // screen invites a second tap on the same button.
+  const [busy, setBusy] = useState(false)
 
   const lookup = useCallback(async (raw: string) => {
     const q = raw.trim().toLowerCase()
     if (!q) return
-    const digits = normalizePhone(raw)
-    const all = await listOrders()
-    setResults(
-      all.filter(
+    setBusy(true)
+    try {
+      const digits = normalizePhone(raw)
+      const all = await listOrders()
+      const hits = all.filter(
         (order) =>
           order.id.toLowerCase() === q ||
           order.id.toLowerCase().endsWith(q) ||
           (digits.length >= 5 && normalizePhone(order.phone) === digits),
-      ),
-    )
+      )
+
+      // A customer's own phone has never held this shop's orders, so an id that
+      // matches nothing locally is asked of the server before it counts as a
+      // miss. Ids are stored as printed, so a typed-in lowercase one is tried
+      // in upper case too.
+      if (hits.length === 0 && /[a-z]/.test(q)) {
+        const typed = raw.trim()
+        const upper = typed.toUpperCase()
+        const remote =
+          (await fetchOrder(typed)) ?? (upper === typed ? undefined : await fetchOrder(upper))
+        if (remote) return setResults([remote])
+      }
+
+      setResults(hits)
+    } finally {
+      setBusy(false)
+    }
   }, [])
 
   // Arriving from the QR on a printed slip: look the order up straight away.
@@ -58,8 +79,13 @@ export function Status() {
           onKeyDown={(e) => e.key === 'Enter' && lookup(query)}
           placeholder={t('status.placeholder')}
         />
-        <button type="button" className="btn btn-primary btn-big" onClick={() => lookup(query)}>
-          {t('status.check')}
+        <button
+          type="button"
+          className="btn btn-primary btn-big"
+          onClick={() => lookup(query)}
+          disabled={busy}
+        >
+          {busy ? <span className="spinner spinner-inline" /> : t('status.check')}
         </button>
       </div>
 

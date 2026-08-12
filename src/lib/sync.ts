@@ -88,6 +88,23 @@ export async function fetchOrders(): Promise<{ live: Order[]; deleted: string[] 
   return { live, deleted }
 }
 
+/**
+ * One order by id. The customer's phone scans the slip's QR and lands straight
+ * on the status screen with nothing in its own store, so that lookup has to
+ * reach the server — and it takes only the order asked for, never the shop's
+ * whole book.
+ */
+export async function fetchOrder(id: string): Promise<Order | undefined> {
+  try {
+    const res = await request(`/orders/${encodeURIComponent(id)}`)
+    if (!res.ok) return undefined
+    const data = (await res.json()) as { order: WireOrder }
+    return decodeOrder(data.order)
+  } catch {
+    return undefined
+  }
+}
+
 export async function pushOrder(order: Order): Promise<void> {
   const res = await request(`/orders/${encodeURIComponent(order.id)}`, {
     method: 'PUT',

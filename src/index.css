@@ -402,6 +402,13 @@ h2 {
   animation: spin 0.9s linear infinite;
 }
 
+/* Same mark, sized to sit inside a button without changing its height. */
+.spinner-inline {
+  width: 18px;
+  height: 18px;
+  border-top-color: currentColor;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
