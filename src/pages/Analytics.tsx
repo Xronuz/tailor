@@ -23,7 +23,7 @@ import { BarChart } from '../components/charts/BarChart'
 import { ShareBars } from '../components/charts/ShareBars'
 import { StatusBadge } from '../components/StatusBadge'
 import { PageHead } from '../components/PageHead'
-import { ChartIcon, ExpandIcon } from '../components/icons'
+import { ChartIcon } from '../components/icons'
 import { Select } from '../components/Select'
 import type { Order } from '../lib/types'
 
@@ -62,6 +62,15 @@ type MoneyView = 'revenue' | 'season'
 
 type PanelKey = 'daily' | 'workload' | 'mix' | 'referral' | 'money'
 
+/**
+ * The screen holds more than one tablet page can carry, so it is cut in two:
+ * the running figures and the day chart on the first, the four breakdowns on
+ * the second. Neither view scrolls — each fills the screen it is given.
+ */
+type View = 'main' | 'breakdown'
+
+const BREAKDOWN: PanelKey[] = ['workload', 'mix', 'referral', 'money']
+
 const MONTH_INDEXES = Array.from({ length: 12 }, (_, i) => i)
 
 export function Analytics() {
@@ -69,20 +78,7 @@ export function Analytics() {
   const [orders, setOrders] = useState<Order[] | null>(null)
   const [range, setRange] = useState<RangeMode>('month')
   const [money, setMoney] = useState<MoneyView>('revenue')
-  // Slot 0 is the large panel; the rest fill the side column and bottom row.
-  const [slots, setSlots] = useState<PanelKey[]>(['daily', 'workload', 'mix', 'referral', 'money'])
-
-  /** Swaps a panel with whatever currently holds the large slot. */
-  function expand(key: PanelKey) {
-    setSlots((prev) => {
-      const i = prev.indexOf(key)
-      if (i <= 0) return prev
-      const next = [...prev]
-      next[0] = prev[i]
-      next[i] = prev[0]
-      return next
-    })
-  }
+  const [view, setView] = useState<View>('main')
   // Which calendar week / month / year is on screen.
   const [anchor, setAnchor] = useState(() => new Date())
 
@@ -207,7 +203,7 @@ export function Analytics() {
   const busiest = [...season].sort((a, b) => b.count - a.count)[0]
   const unpaidOrders = data.filter((o) => amount(o.price) - amount(o.prepaid) > 0).length
 
-  /** One card per panel. `large` marks the wide slot, which needs no button. */
+  /** One card per panel. `large` marks the full-width day chart. */
   function renderPanel(key: PanelKey, large = false) {
     const shell = (title: string, children: React.ReactNode, head?: React.ReactNode) => (
       <section key={key} className={`card panel-card${large ? ' chart-main' : ''}`}>
@@ -217,20 +213,7 @@ export function Analytics() {
             {key === 'daily' && <p className="muted small chart-span">{spanLabel}</p>}
           </div>
 
-          <div className="panel-head-tools">
-            {head}
-            {!large && (
-              <button
-                type="button"
-                className="icon-btn panel-expand"
-                aria-label={t('analytics.expand')}
-                title={t('analytics.expand')}
-                onClick={() => expand(key)}
-              >
-                <ExpandIcon />
-              </button>
-            )}
-          </div>
+          <div className="panel-head-tools">{head}</div>
         </div>
 
         <div className="panel-body">{children}</div>
@@ -320,50 +303,67 @@ export function Analytics() {
     )
   }
 
+  const tabs: { key: View; label: string }[] = [
+    { key: 'main', label: t('analytics.tabMain') },
+    { key: 'breakdown', label: t('analytics.tabBreakdown') },
+  ]
+
   return (
     <div className="page page-analytics">
-      <PageHead title={t('nav.analytics')} icon={<ChartIcon />} sub={spanLabel} />
+      <PageHead
+        title={t('nav.analytics')}
+        icon={<ChartIcon />}
+        sub={view === 'main' ? spanLabel : undefined}
+        actions={
+          <div className="chips">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                className={`chip${view === tab.key ? ' chip-on' : ''}`}
+                onClick={() => setView(tab.key)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        }
+      />
 
-      {/* the first three sit over the wide column, the fourth over the side one */}
-      <div className="tiles">
-        <div className="tiles-main">
-          <Tile label={t('analytics.orders')} value={String(sums.orders)} to="/orders" />
-          <Tile
-            label={t('analytics.revenue')}
-            value={shortMoney(sums.revenue)}
-            sub={`${fullMoney(sums.revenue)} ${t('common.money')}`}
-            to="/orders"
-          />
-          <Tile
-            label={t('analytics.unpaid')}
-            value={shortMoney(sums.balance)}
-            sub={`${unpaidOrders} ${t('analytics.ordersUnit')}`}
-            tone={sums.balance > 0 ? 'due' : undefined}
-            to="/orders?pay=due"
-          />
-        </div>
+      {view === 'main' ? (
+        <>
+          {/* the first three sit over the wide column, the fourth over the side one */}
+          <div className="tiles">
+            <div className="tiles-main">
+              <Tile label={t('analytics.orders')} value={String(sums.orders)} to="/orders" />
+              <Tile
+                label={t('analytics.revenue')}
+                value={shortMoney(sums.revenue)}
+                sub={`${fullMoney(sums.revenue)} ${t('common.money')}`}
+                to="/orders"
+              />
+              <Tile
+                label={t('analytics.unpaid')}
+                value={shortMoney(sums.balance)}
+                sub={`${unpaidOrders} ${t('analytics.ordersUnit')}`}
+                tone={sums.balance > 0 ? 'due' : undefined}
+                to="/orders?pay=due"
+              />
+            </div>
 
-        <Tile
-          label={t('analytics.average')}
-          value={shortMoney(sums.average)}
-          sub={`${fullMoney(sums.average)} ${t('common.money')}`}
-          to="/orders"
-        />
-      </div>
+            <Tile
+              label={t('analytics.average')}
+              value={shortMoney(sums.average)}
+              sub={`${fullMoney(sums.average)} ${t('common.money')}`}
+              to="/orders"
+            />
+          </div>
 
-      <div className="analytics-body">
-        {renderPanel(slots[0], true)}
-
-        <div className="analytics-side">
-          {renderPanel(slots[1])}
-          {renderPanel(slots[2])}
-        </div>
-      </div>
-
-      <div className="analytics-bottom">
-        {renderPanel(slots[3])}
-        {renderPanel(slots[4])}
-      </div>
+          <div className="analytics-main">{renderPanel('daily', true)}</div>
+        </>
+      ) : (
+        <div className="analytics-grid">{BREAKDOWN.map((key) => renderPanel(key))}</div>
+      )}
     </div>
   )
 }

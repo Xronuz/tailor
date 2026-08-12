@@ -2590,25 +2590,6 @@ a.meta-chip:focus-visible {
   margin-left: auto;
 }
 
-.panel-expand {
-  width: 34px;
-  height: 34px;
-  flex: none;
-  opacity: 0.75;
-}
-
-.panel-expand:hover,
-.panel-expand:focus-visible {
-  opacity: 1;
-  border-color: var(--gold);
-  color: var(--gold);
-}
-
-.panel-expand svg {
-  width: 15px;
-  height: 15px;
-}
-
 .panel-card .card-head {
   margin-bottom: var(--space-2);
   gap: var(--space-2);
@@ -2649,6 +2630,24 @@ a.meta-chip:focus-visible {
   .analytics-bottom {
     display: grid;
     grid-template-columns: var(--analytics-split);
+    gap: var(--space-3);
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* First view: the day chart alone under the tiles, taking all that is left. */
+  .analytics-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Second view: the four breakdowns, two by two, sharing the screen evenly. */
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
     flex: 1;
     min-height: 0;
@@ -2706,14 +2705,17 @@ a.meta-chip:focus-visible {
 
   .analytics-body > .card,
   .analytics-side > .card,
-  .analytics-bottom > .card {
+  .analytics-bottom > .card,
+  .analytics-main > .card,
+  .analytics-grid > .card {
     display: flex;
     flex-direction: column;
     min-height: 0;
   }
 
   .analytics-side .panel-body,
-  .analytics-bottom .panel-body {
+  .analytics-bottom .panel-body,
+  .analytics-grid .panel-body {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -2721,7 +2723,8 @@ a.meta-chip:focus-visible {
   }
 
   .analytics-side .chart,
-  .analytics-bottom .chart {
+  .analytics-bottom .chart,
+  .analytics-grid .chart {
     flex: 1;
     min-height: 0;
     display: flex;
@@ -2729,7 +2732,8 @@ a.meta-chip:focus-visible {
   }
 
   .analytics-side .chart svg,
-  .analytics-bottom .chart svg {
+  .analytics-bottom .chart svg,
+  .analytics-grid .chart svg {
     flex: 1;
     min-height: 0;
     height: auto;
@@ -2802,7 +2806,9 @@ a.meta-chip:focus-visible {
 @media (max-width: 999px) {
   .analytics-body,
   .analytics-side,
-  .analytics-bottom {
+  .analytics-bottom,
+  .analytics-main,
+  .analytics-grid {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
