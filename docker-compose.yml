@@ -1,0 +1,17 @@
+services:
+  tailor:
+    build: .
+    # Or, once published: image: ghcr.io/<user>/tailor:latest
+    container_name: tailor
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    volumes:
+      # Orders survive rebuilds and redeploys because they live here.
+      - tailor-data:/data
+    environment:
+      PORT: "4000"
+      DB_PATH: /data/tailor.db
+
+volumes:
+  tailor-data:

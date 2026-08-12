@@ -1,0 +1,3450 @@
+:root {
+  /* ---------- design tokens ----------
+     One atelier system for the whole app: warm ivory ground, charcoal ink,
+     antique gold used only as an accent. Set on the landing screen, applied
+     everywhere else through these tokens. */
+  --bg: #f2ece4;
+  --surface: #fcfaf7;
+  --surface-strong: #ffffff;
+  --surface-sunken: #f7f3ee;
+  --glass-edge: #ded3c5;
+  --shadow: 0 12px 30px rgba(122, 119, 114, 0.14);
+  --shadow-soft: 0 6px 16px rgba(122, 119, 114, 0.09);
+  --ink: #20252a;
+  --ink-soft: #7a7772;
+  --line: #ded3c5;
+  --line-soft: rgba(222, 211, 197, 0.6);
+  --accent: #20252a;
+  --accent-ink: #fcfaf7;
+  --gold: #a47b3c;
+  --gold-soft: rgba(164, 123, 60, 0.12);
+  --danger: #8f4a3c;
+
+  /* spacing scale */
+  --space-1: 0.35rem;
+  --space-2: 0.6rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.25rem;
+  /* Atelier palette for the landing screen: warm ivory ground, antique gold
+     accent. No red anywhere on this screen. */
+  --kiosk-bg: #f7f3ee;
+  --kiosk-card: #fcfaf7;
+  --kiosk-ink: #20252a;
+  --kiosk-muted: #7a7772;
+  --kiosk-gold: #a47b3c;
+  --kiosk-beige: #ded3c5;
+  --kiosk-shadow: rgba(122, 119, 114, 0.16);
+  --radius: 18px;
+  --radius-sm: 12px;
+  /* One width for every screen: a landscape Lenovo tablet (~1200 CSS px) fills
+     edge to edge, while a desktop monitor still gets a bounded measure. */
+  --page-max: 1280px;
+  /* Tablet build: buttons and chips read as rectangles, not pills. */
+  --btn-radius: 8px;
+
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* Nothing may push the page sideways on a narrow screen. */
+  overflow-x: hidden;
+  background: var(--bg);
+  background-image: radial-gradient(70rem 50rem at 50% -15%, #f9f5f0, transparent 70%);
+  background-attachment: fixed;
+}
+
+/* The ground is painted on <html> and reaches the canvas from there. body stays
+   transparent on purpose: an opaque body background paints over the fixed
+   wallpaper behind it, which would hide <Backdrop> completely. */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: transparent;
+}
+
+/* ---------- type scale ----------
+   Serif for page titles only; sans for every piece of UI text. */
+
+h1 {
+  font-family: var(--font-display);
+  font-size: 2.1rem;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: 0.005em;
+  color: var(--ink);
+  margin: 0 0 var(--space-1);
+}
+
+h1 em,
+h1 i,
+h2 em,
+h2 i {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+/* section headings can carry a small mark before the label */
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ink-soft);
+  margin: 0 0 var(--space-3);
+}
+
+/* ---------- surfaces ----------
+   Flat ivory panels with a hairline warm border and a very soft shadow. The
+   old frosted-glass treatment is gone: it read cold against the ivory ground. */
+
+.card,
+.tile,
+.order-card,
+.banner,
+.select-menu,
+.form-actions,
+.liquid-glass,
+.liquid-glass-strong {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* ---------- app chrome ---------- */
+
+/* ---------- page header ----------
+   No navigation bar: each screen carries its own return, mark and title. */
+
+.page-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.page-head-back {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.page-head-back:hover,
+.page-head-back:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateX(-2px);
+}
+
+.page-head-back svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* the screen's mark, matching the landing tiles */
+.page-head-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.page-head-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.page-head-text {
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+
+.page-head-text h1 {
+  margin: 0;
+  font-size: 1.9rem;
+}
+
+.page-head-text p {
+  margin: 0.15rem 0 0;
+}
+
+.page-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+/* icons sitting inside buttons */
+.btn svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 560px) {
+  .page-head-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .page-head-actions .btn {
+    flex: 1 1 auto;
+  }
+
+  .page-head-text h1 {
+    font-size: 1.6rem;
+  }
+}
+
+/* ---------- sync state ---------- */
+
+.sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4d5f50;
+  background: rgba(93, 112, 96, 0.12);
+  border: 1px solid rgba(93, 112, 96, 0.3);
+  cursor: pointer;
+}
+
+.sync-badge-off {
+  color: var(--danger);
+  background: rgba(143, 74, 60, 0.1);
+  border-color: rgba(143, 74, 60, 0.35);
+}
+
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.sync-dot-busy {
+  animation: sync-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes sync-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sync-dot-busy {
+    animation: none;
+  }
+}
+
+/* Segmented pill: one tap per script, active option rides in a round chip. */
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(222, 211, 197, 0.42);
+  border: 1px solid var(--kiosk-beige);
+}
+
+.lang-toggle-btn {
+  min-height: 40px;
+  min-width: 54px;
+  padding: 0.3rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--kiosk-muted);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.lang-toggle-btn:hover {
+  color: var(--kiosk-ink);
+}
+
+/* selected script is the accent state */
+.lang-toggle-on,
+.lang-toggle-on:hover {
+  background: var(--kiosk-gold);
+  color: var(--kiosk-card);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(122, 119, 114, 0.25);
+}
+
+.app-main {
+  /* above the fixed wallpaper */
+  position: relative;
+  z-index: 1;
+  padding: var(--space-4) var(--space-4) var(--space-5);
+}
+
+.page {
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.muted {
+  color: var(--ink-soft);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+.error {
+  margin: 0;
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: rgba(143, 74, 60, 0.09);
+  border: 1px solid rgba(143, 74, 60, 0.25);
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* ---------- empty & loading states ---------- */
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-3);
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.state-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--ink);
+}
+
+.spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  border-top-color: var(--gold);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s;
+  }
+}
+
+.card {
+  padding: var(--space-4) var(--space-4) var(--space-4);
+}
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.card-head h2 {
+  margin: 0;
+}
+
+h2 svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 52px;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--line);
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+  text-decoration: none;
+  background: var(--surface);
+  color: var(--ink);
+  transition:
+    transform 0.14s ease,
+    background 0.14s ease,
+    border-color 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.btn:hover {
+  box-shadow: var(--shadow-soft);
+}
+
+.btn:active {
+  transform: scale(0.985);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+}
+
+/* primary: charcoal */
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-primary:hover {
+  background: #2c333a;
+}
+
+/* secondary: ivory with a thin warm border */
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+}
+
+.btn-secondary:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink-soft);
+}
+
+.btn-ghost:hover {
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.btn-danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fdf8f6;
+}
+
+/* gold is an accent, never a whole button surface */
+.btn-accent {
+  background: transparent;
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.btn-big {
+  min-height: 64px;
+  font-size: 1.1rem;
+}
+
+.btn-huge {
+  min-height: 132px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.35rem;
+  letter-spacing: 0.01em;
+  border-radius: 12px;
+  flex-direction: column;
+}
+
+.btn-small {
+  min-height: 44px;
+  padding: 0.4rem 0.8rem;
+}
+
+.btn-count {
+  font-size: 0.95rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* ---------- landing ----------
+   Info-point panel: the app already runs full-screen on the tablet, so there
+   is no device frame — the screen itself is the panel. */
+
+.kiosk {
+  width: 100%;
+}
+
+.kiosk-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-height: 70vh;
+  padding: 2.6rem 2.8rem 1.8rem;
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px rgba(222, 211, 197, 0.7),
+    0 18px 40px var(--kiosk-shadow);
+  /* flat warm ivory — no corporate gradient */
+  background: var(--kiosk-bg);
+  color: var(--kiosk-ink);
+}
+
+.kiosk-head {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.kiosk-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  flex: 1;
+  text-align: center;
+}
+
+/* main title: high-contrast serif, charcoal */
+.kiosk-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2.3rem;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: 0.005em;
+  color: var(--kiosk-ink);
+}
+
+/* small sans label under it */
+.kiosk-kicker {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--kiosk-muted);
+}
+
+/* Clock left, language toggle right, brand centred between them. */
+.kiosk-time {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.kiosk-meta {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+.kiosk-clock {
+  font-family: var(--font-body);
+  font-size: 1.45rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--kiosk-ink);
+}
+
+.kiosk-date {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--kiosk-muted);
+}
+
+.kiosk-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.08fr 1fr 1.08fr;
+  grid-template-areas:
+    'new history analytics'
+    'new status analytics';
+  gap: 1.25rem;
+}
+
+.kiosk-tile {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 168px;
+  padding: 1.5rem 1.6rem;
+  border-radius: 18px;
+  text-decoration: none;
+  color: var(--kiosk-ink);
+  background: var(--kiosk-card);
+  box-shadow:
+    0 0 0 1px rgba(222, 211, 197, 0.85),
+    0 10px 24px rgba(122, 119, 114, 0.1);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.kiosk-tile:hover,
+.kiosk-tile:focus-visible {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 1px var(--kiosk-gold),
+    0 16px 34px rgba(122, 119, 114, 0.18);
+}
+
+.kiosk-tile:active {
+  transform: translateY(-1px) scale(0.995);
+}
+
+.kiosk-tile-text {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-width: 92%;
+}
+
+/* card titles: semibold sans, charcoal — never gold, never red */
+.kiosk-tile-label {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--kiosk-ink);
+}
+
+.kiosk-tile-sub {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--kiosk-muted);
+}
+
+.kiosk-tile-primary {
+  background: var(--kiosk-card);
+}
+
+/* artwork fills the tile; a bottom scrim keeps the label legible over it */
+.kiosk-tile-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  /* biased upward so the fitting scene stays clear of the bottom scrim */
+  background-position: center 32%;
+  background-repeat: no-repeat;
+  transition: transform 0.35s ease;
+}
+
+.kiosk-tile-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(252, 250, 247, 0) 34%,
+    rgba(252, 250, 247, 0.74) 64%,
+    rgba(252, 250, 247, 0.96) 100%
+  );
+}
+
+.kiosk-tile-photo .kiosk-tile-text {
+  position: relative;
+  z-index: 2;
+}
+
+.kiosk-tile-photo:hover .kiosk-tile-image,
+.kiosk-tile-photo:focus-visible .kiosk-tile-image {
+  transform: scale(1.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kiosk-tile-image,
+  .kiosk-tile-photo:hover .kiosk-tile-image,
+  .kiosk-tile-photo:focus-visible .kiosk-tile-image {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* the two full-height tiles carry the headline labels */
+.kiosk-new .kiosk-tile-label,
+.kiosk-analytics .kiosk-tile-label {
+  font-size: 1.45rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kiosk-tile {
+    transition: none;
+  }
+}
+
+.kiosk-foot {
+  display: flex;
+  justify-content: center;
+}
+
+.kiosk-foot-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 48px;
+  padding: 0.5rem 1.6rem;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--kiosk-gold);
+  transition: background 0.15s ease;
+}
+
+.kiosk-foot-link:hover,
+.kiosk-foot-link:focus-visible {
+  background: rgba(164, 123, 60, 0.1);
+}
+
+.form-actions {
+  position: sticky;
+  bottom: 0.5rem;
+  z-index: 15;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow);
+}
+
+.form-actions .btn {
+  flex: 1 1 180px;
+}
+
+.order-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* ---------- chips ---------- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  min-height: 48px;
+  padding: 0.55rem 1.1rem;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease,
+    color 0.14s ease,
+    transform 0.12s ease;
+}
+
+.chip:hover {
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+.chip:active {
+  transform: scale(0.985);
+}
+
+/* '+' chip and the name field it turns into */
+.chip-add {
+  min-width: 52px;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0.4rem 0.9rem;
+}
+
+.chip-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.chip-input input {
+  min-height: 48px;
+  width: 11rem;
+}
+
+.chip-on,
+.chip-on:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+/* ---------- fields ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.field > span {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+
+input,
+select,
+textarea {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--btn-radius);
+  padding: 0.75rem 0.9rem;
+  min-height: 52px;
+  width: 100%;
+  transition:
+    border-color 0.14s ease,
+    background 0.14s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: #cbbda8;
+}
+
+/* ---------- dropdown ----------
+   Native <select> gives no control over the option list, so the picker is a
+   button plus a glass listbox. Roving focus stays on the trigger; the list is
+   keyboard-driven from there. */
+
+.select {
+  position: relative;
+  width: 100%;
+}
+
+.select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 52px;
+  padding: 0.7rem 0.9rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+  text-align: left;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+  transition: border-color 0.14s ease;
+}
+
+.select-trigger:hover {
+  border-color: #cbbda8;
+}
+
+.select-caret {
+  flex: none;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-right: 1.5px solid var(--ink-soft);
+  border-bottom: 1.5px solid var(--ink-soft);
+  transform: translateY(-25%) rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.select-open .select-caret {
+  transform: translateY(10%) rotate(-135deg);
+}
+
+.select-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  min-width: 100%;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 0.35rem;
+  margin: 0;
+  list-style: none;
+  border-radius: 12px;
+  /* Scrolls, so it takes a plain lit border instead of the ::before ring — an
+     absolutely positioned ring would scroll away with the options. */
+  border: 1px solid var(--glass-edge);
+}
+
+/* Filters and period pickers sit at the right end of their row — open their
+   menus leftwards so nothing spills past the screen edge. */
+.filter-select .select-menu,
+.period-select .select-menu {
+  left: auto;
+  right: 0;
+}
+
+.select-menu-up {
+  top: auto;
+  bottom: calc(100% + 0.4rem);
+}
+
+.select-option {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.6rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+}
+
+.select-option:hover,
+.select-option-active {
+  background: var(--surface-sunken);
+}
+
+.select-option-on {
+  background: var(--gold-soft);
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.select-option-on::after {
+  content: '✓';
+  font-size: 0.9rem;
+}
+
+/* ---------- unit suffix inside a field ---------- */
+
+.suffix-input {
+  position: relative;
+  display: block;
+}
+
+.suffix-input.suffix-on input {
+  padding-right: 3.4rem;
+}
+
+.suffix-input.suffix-clearable input {
+  padding-right: 5.4rem;
+}
+
+.suffix-unit {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+
+.suffix-clearable .suffix-unit {
+  right: 2.9rem;
+}
+
+/* wipes one measurement without hunting for the backspace key */
+.suffix-clear {
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--ink-soft);
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.8;
+  transition:
+    opacity 0.14s ease,
+    background 0.14s ease,
+    color 0.14s ease;
+}
+
+.suffix-clear:hover,
+.suffix-clear:focus-visible {
+  opacity: 1;
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.unit {
+  margin-left: 0.35rem;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+textarea {
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.btn:focus-visible,
+.chip:focus-visible,
+.select-trigger:focus-visible,
+.select-option:focus-visible,
+.order-card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-color: var(--gold);
+  background-color: var(--surface);
+}
+
+.field-grid > * {
+  min-width: 0;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0 1rem;
+}
+
+/* Customer block: fixed 2 x 2 on tablet, single column on a phone. */
+.field-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Order details: fabric over notes on the left, the cloth shot filling the
+   right of both rows. */
+.details-grid > * {
+  min-width: 0;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'fabric material'
+    'notes material';
+  gap: 0 var(--space-4);
+  align-items: start;
+}
+
+.details-fabric {
+  grid-area: fabric;
+}
+
+.details-notes {
+  grid-area: notes;
+}
+
+.details-material {
+  grid-area: material;
+  height: 100%;
+}
+
+.material-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+  padding: var(--space-3);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+}
+
+.material-box .btn {
+  align-self: flex-start;
+}
+
+.material-grid {
+  margin-top: 0;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+
+@media (max-width: 720px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'fabric'
+      'notes'
+      'material';
+  }
+}
+
+/* Price / prepaid / pay type / status sit on one line. */
+.field-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0 var(--space-3);
+  /* clears the notes / cloth block above it */
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line-soft);
+}
+
+@media (max-width: 900px) {
+  .field-grid-4 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .field-grid-2,
+  .field-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.measure-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* '+' cell rides along in the measurement grid, aligned with the inputs (not
+   the labels) so it sits level with the row it ends. */
+.field-add {
+  justify-content: flex-end;
+}
+
+.btn-add-field {
+  width: 100%;
+  font-size: 1.6rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.field-measure input {
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.custom-label {
+  margin-bottom: 0.35rem;
+}
+
+.custom-row {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* Magnifier drawn as an inline data URI — no extra element, no asset, and it
+   works on every search field at once. */
+.search {
+  min-height: 56px;
+  font-size: 1rem;
+  padding-left: 3rem;
+  background-color: var(--surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a7772' stroke-width='1.7' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.4'/%3E%3Cpath d='m16 16 4.5 4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 0.95rem center;
+  background-size: 20px 20px;
+}
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--gold-soft);
+  border-color: rgba(164, 123, 60, 0.3);
+}
+
+.banner-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ---------- photos ---------- */
+
+.photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.photo-thumb {
+  position: relative;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* remove sits on the image corner, so a wrong upload is one tap from gone */
+.photo-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(32, 37, 42, 0.72);
+  color: #fff;
+  cursor: pointer;
+}
+
+.photo-remove:hover,
+.photo-remove:focus-visible {
+  background: var(--danger);
+}
+
+.photo-remove svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.photo-thumb img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+
+/* ---------- tailor roster ---------- */
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.tailor-new {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.tailor-new .field-grid {
+  width: 100%;
+}
+
+.roster-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.roster-bar .search {
+  flex: 1 1 240px;
+}
+
+.roster-bar .btn {
+  flex: none;
+}
+
+.roster-table {
+  margin-top: var(--space-4);
+}
+
+/* Three even columns, left aligned like every other table. */
+.data-table.roster-table th,
+.data-table.roster-table td {
+  width: 33.33%;
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+.roster-table input {
+  min-height: 46px;
+}
+
+.roster-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* icon-only row actions */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--btn-radius);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease,
+    color 0.14s ease;
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-btn:hover,
+.icon-btn:focus-visible {
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.icon-edit:hover,
+.icon-edit:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.icon-delete {
+  color: var(--danger);
+  opacity: 0.9;
+}
+
+.icon-delete:hover,
+.icon-delete:focus-visible {
+  opacity: 1;
+  color: var(--danger);
+  border-color: var(--danger);
+  background: rgba(143, 74, 60, 0.08);
+}
+
+.icon-confirm {
+  color: var(--danger);
+  opacity: 0.9;
+  border-color: var(--danger);
+  background: rgba(143, 74, 60, 0.1);
+}
+
+.icon-confirm:hover,
+.icon-confirm:focus-visible {
+  opacity: 1;
+  color: var(--accent-ink);
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+.icon-save:hover,
+.icon-save:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* A card that holds nothing but a table: the rows supply their own rhythm, so
+   the panel only needs to frame them. */
+.card-table {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.card-table .table-wrap {
+  margin-top: 0;
+}
+
+/* ---------- order history ---------- */
+
+/* search + status filters on one line; the chips wrap as a block when the
+   screen is too narrow rather than pushing the search box off it. */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.filter-bar .search {
+  flex: 1 1 16rem;
+  min-width: 12rem;
+}
+
+.filter-bar .chips {
+  flex: 0 1 auto;
+}
+
+/* the two dropdowns sit at the right end of the search row */
+.filter-selects {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.filter-select {
+  width: auto;
+  min-width: 11rem;
+}
+
+.filter-select .select-trigger {
+  min-height: 48px;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 720px) {
+  .filter-selects {
+    margin-left: 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .filter-select {
+    flex: 1 1 10rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .filter-bar .search {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------- order history table ---------- */
+
+.history-table th,
+.history-table td {
+  vertical-align: middle;
+}
+
+.row-clickable {
+  cursor: pointer;
+}
+
+.row-clickable:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+
+.history-table .cell-id {
+  white-space: nowrap;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* copy button sits to the right of the number, on the same line */
+.history-table .cell-id .order-copy {
+  margin-left: 0.3rem;
+}
+
+.history-table .cell-name {
+  font-weight: 600;
+}
+
+.history-table .cell-money {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* what is still owed, under the price */
+.cell-due {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--danger);
+}
+
+/* past its delivery date and not finished */
+.tag-late {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(143, 74, 60, 0.12);
+  border: 1px solid rgba(143, 74, 60, 0.35);
+  color: var(--danger);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.history-table .cell-go {
+  width: 2rem;
+  text-align: right;
+  color: var(--ink-soft);
+}
+
+.row-clickable:hover .cell-go {
+  color: var(--gold);
+}
+
+/* ---------- detail drawer ---------- */
+
+.drawer-root {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drawer-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(32, 37, 42, 0.32);
+  animation: drawer-fade 0.18s ease;
+}
+
+.drawer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(420px, 100%);
+  height: 100%;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -18px 0 40px rgba(122, 119, 114, 0.22);
+  animation: drawer-in 0.22s ease;
+  outline: none;
+}
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.drawer-head > div {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.drawer-title {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+}
+
+.drawer-title strong {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.drawer-status {
+  display: flex;
+}
+
+.drawer-group h2 {
+  margin-bottom: var(--space-2);
+}
+
+.drawer-rows {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.drawer-row:last-child {
+  border-bottom: none;
+}
+
+.drawer-row dt {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.drawer-row dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: right;
+  color: var(--ink);
+}
+
+.drawer-row dd a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.drawer-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-top: 1px solid var(--line-soft);
+}
+
+.drawer-foot .btn {
+  flex: 1;
+}
+
+.drawer-foot .icon-btn {
+  flex: none;
+  width: 48px;
+  height: 48px;
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes drawer-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer,
+  .drawer-scrim {
+    animation: none;
+  }
+}
+
+/* ---------- order list ---------- */
+
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.order-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--ink);
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+  box-shadow: var(--shadow);
+}
+
+.order-card:active {
+  transform: translateY(0);
+}
+
+/* name, then the order number with a copy button beside it */
+.order-card-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.order-card-name {
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.order-id {
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-soft);
+  border-radius: 6px;
+  padding: 0.12rem 0.45rem;
+}
+
+/* inline-grid, not grid: a block box would drop to the line below the number */
+.order-copy {
+  display: inline-grid;
+  place-items: center;
+  vertical-align: middle;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.14s ease,
+    color 0.14s ease;
+}
+
+.order-copy svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.order-copy:hover,
+.order-copy:focus-visible {
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.order-card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.order-card-name {
+  font-size: 1.1rem;
+}
+
+.order-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+/* icon + value, lighter than the pill chips used on the status screen */
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.meta-item svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.order-card-side {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: none;
+}
+
+/* money taken vs money still owed */
+.order-money {
+  display: flex;
+  gap: var(--space-4);
+  margin: 0;
+  text-align: right;
+}
+
+.order-money dt {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+}
+
+.order-money dd {
+  margin: 0.15rem 0 0;
+  min-width: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.order-money-due {
+  color: var(--danger);
+}
+
+.order-money-clear {
+  color: #4d5f50;
+}
+
+/* Status is a reserved role in the palette — warm, low-chroma, and always
+   carrying its own text label, never colour alone. */
+.badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  border: 1px solid var(--line);
+  background: var(--surface-sunken);
+  color: var(--ink-soft);
+}
+
+/* Colour dot, so the stage is readable at a glance across the workshop. The
+   text label stays — the dot never carries the meaning on its own. */
+.badge::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.badge-accepted {
+  background: rgba(222, 211, 197, 0.5);
+  border-color: #d3c6b2;
+  color: #6b6155;
+}
+.badge-in_progress {
+  background: var(--gold-soft);
+  border-color: rgba(164, 123, 60, 0.4);
+  color: var(--gold);
+}
+.badge-done {
+  background: rgba(93, 112, 96, 0.12);
+  border-color: rgba(93, 112, 96, 0.35);
+  color: #4d5f50;
+}
+
+.chip-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ---------- order workflow rail ---------- */
+
+.steps {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.step {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* the rail between the dots — top matches the dot's centre */
+.step + .step::before {
+  content: '';
+  position: absolute;
+  top: 35px;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background: var(--line);
+  transition: background 0.35s ease;
+}
+
+.step-done::before,
+.step-now::before {
+  background: var(--accent);
+}
+
+.step-btn {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0.2rem 0.25rem;
+  background: none;
+  border: none;
+  font: inherit;
+  color: var(--ink-soft);
+  text-align: center;
+  cursor: default;
+}
+
+button.step-btn {
+  cursor: pointer;
+}
+
+.step-dot {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.2s ease;
+}
+
+/* the animation fills its circle instead of sitting inside it */
+.step-dot-art {
+  padding: 0;
+  overflow: hidden;
+  background: var(--surface-sunken);
+}
+
+.step-gif {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.step-label {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+
+.step-done .step-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.step-now .step-dot {
+  background: var(--surface);
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 0 4px var(--gold-soft);
+}
+
+.step-now .step-label {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.step-done .step-label {
+  color: var(--ink);
+}
+
+button.step-btn:hover .step-dot {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+button.step-btn:focus-visible {
+  outline: none;
+}
+
+button.step-btn:focus-visible .step-dot {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-dot,
+  .step + .step::before {
+    transition: none;
+  }
+
+  button.step-btn:hover .step-dot {
+    transform: none;
+  }
+}
+
+/* ---------- status lookup ---------- */
+
+.lookup {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.lookup .search {
+  flex: 1 1 260px;
+}
+
+.status-card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.status-card-head .order-card-name {
+  font-size: 1.15rem;
+}
+
+/* phone / address, each behind its own icon */
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 34px;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-soft);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.meta-chip svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+a.meta-chip:hover,
+a.meta-chip:focus-visible {
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+.status-facts > div {
+  min-width: 0;
+}
+
+.status-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-4) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line-soft);
+}
+
+.status-facts div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.status-facts dt {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+}
+
+.status-facts dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-balance {
+  color: var(--danger);
+}
+
+/* ---------- analytics ---------- */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.75rem;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+}
+
+/* a figure that leads somewhere */
+.tile-link {
+  text-decoration: none;
+  color: var(--ink);
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.tile-link:hover,
+.tile-link:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+  box-shadow: var(--shadow);
+}
+
+.tile-label {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+}
+
+.tile-value {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 2rem;
+  line-height: 1.1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.tile-sub {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+/* svg then legend, stacked — never side by side or spilling out */
+.chart-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-stack > svg {
+  width: 100%;
+}
+
+.chart svg {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  overflow: hidden;
+}
+
+.chart .grid {
+  stroke: var(--line-soft);
+  stroke-width: 1;
+}
+
+.chart .baseline {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.chart .axis {
+  fill: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Single-series charts wear the UI ink; the garment mix uses the bronze ramp
+   assigned in Analytics.tsx. */
+.chart .line-series {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart .marker {
+  fill: var(--gold);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+.chart .crosshair {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.chart .bar {
+  fill: #5c4a3a;
+}
+
+.chart .bar-on {
+  fill: var(--gold);
+}
+
+.chart .bar-hit {
+  fill: transparent;
+}
+
+.chart-tip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  max-width: 70%;
+  display: flex;
+  flex-direction: column;
+  padding: 0.45rem 0.75rem;
+  background: var(--surface-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--btn-radius);
+  box-shadow: var(--shadow-soft);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.chart-tip span {
+  color: var(--ink-soft);
+}
+
+/* 31 day numbers on one axis: small type, tight tracking, so each stands
+   apart instead of running into its neighbour. */
+.chart-stack .axis {
+  font-size: 9px;
+  letter-spacing: -0.02em;
+}
+
+.chart-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Two cards side by side, stacking on a narrow screen. Equal columns and
+   stretched rows, so a pair matches even when one holds fewer bars. */
+.card-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.card-row > .card {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  /* Grid items default to min-width:auto — without this a chart wider than its
+     column pushes the card out and the page scrolls sideways. */
+  min-width: 0;
+}
+
+/* Pairs where one card is a single control: let each keep its own height
+   instead of stretching an empty panel to match a tall one. */
+.card-row-top {
+  align-items: start;
+}
+
+/* the chart or bar list takes the slack, keeping both cards the same height */
+.card-row > .card > .share-bars,
+.card-row > .card > .chart {
+  flex: 1;
+  justify-content: center;
+}
+
+/* Two charts side by side stop being readable well before a phone width. */
+@media (max-width: 1000px) {
+  .card-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.period-select {
+  width: auto;
+  min-width: 9.5rem;
+}
+
+.period-select-year {
+  min-width: 6.5rem;
+}
+
+.period-select .select-trigger {
+  min-height: 44px;
+  font-size: 0.92rem;
+}
+
+.chart-card {
+  position: absolute;
+  transform: translate(0.9rem, -50%);
+  max-width: 70%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.55rem 0.85rem;
+  background: var(--surface-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+/* near the right edge the card flips to the other side of the point */
+.chart-card-left {
+  transform: translate(calc(-100% - 0.9rem), -50%);
+}
+
+.chart-card-label {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.chart-card-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.chart-card-total {
+  margin-top: 0.15rem;
+  padding-top: 0.3rem;
+  border-top: 1px solid var(--line-soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.chart-card-row strong {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.1rem;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-swatch {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  border-radius: 3px;
+}
+
+/* ---------- analytics dashboard ----------
+   Everything on one screen: header, figures, then a body that takes whatever
+   height is left. Only the panel's own content may scroll. */
+
+.panel-body {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.panel-card {
+  padding: var(--space-3);
+}
+
+/* controls and the expand button share the right of a panel head */
+.panel-head-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.panel-expand {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  opacity: 0.75;
+}
+
+.panel-expand:hover,
+.panel-expand:focus-visible {
+  opacity: 1;
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.panel-expand svg {
+  width: 15px;
+  height: 15px;
+}
+
+.panel-card .card-head {
+  margin-bottom: var(--space-2);
+  gap: var(--space-2);
+}
+
+.panel-card h2 {
+  margin-bottom: var(--space-2);
+}
+
+/* small switch inside a card head, e.g. revenue vs season */
+.chip-small {
+  min-height: 34px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.75rem;
+}
+
+@media (min-width: 1000px) and (min-height: 620px) {
+  .page-analytics {
+    height: calc(100dvh - 2 * var(--space-4) - var(--space-5));
+    min-height: 0;
+  }
+
+  /* Two bands: the day chart with workload beside it, then three small
+     panels underneath. Everything shares the height that is left. */
+  /* Tiles, chart band and bottom band all use this split, so the right-hand
+     column is one straight edge from top to bottom. */
+  .analytics-body {
+    display: grid;
+    grid-template-columns: var(--analytics-split);
+    gap: var(--space-3);
+    /* the day chart is the one people read — give it the room */
+    flex: 1.9;
+    min-height: 0;
+  }
+
+  /* Two panels now: the referral list is the long one, the money card sits
+     beside it. */
+  .analytics-bottom {
+    display: grid;
+    grid-template-columns: var(--analytics-split);
+    gap: var(--space-3);
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* workload over garment mix, sharing the right column */
+  .analytics-side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 0;
+  }
+
+  .analytics-side > .card {
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* title and period controls share one line above the plot */
+  .chart-main .card-head {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+  }
+
+  .chart-main .chart-controls {
+    flex-wrap: nowrap;
+    margin-left: auto;
+  }
+
+  .chart-main .period-select {
+    min-width: 7.5rem;
+  }
+
+  .chart-main .period-select-year {
+    min-width: 5.5rem;
+  }
+
+  .chart-main .period-select .select-trigger {
+    min-height: 40px;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  .chart-main .chart-controls .chip {
+    min-height: 40px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  .chart-main h2 {
+    white-space: nowrap;
+  }
+
+  .analytics-body > .card,
+  .analytics-side > .card,
+  .analytics-bottom > .card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .analytics-side .panel-body,
+  .analytics-bottom .panel-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .analytics-side .chart,
+  .analytics-bottom .chart {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .analytics-side .chart svg,
+  .analytics-bottom .chart svg {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+
+  .analytics-bottom .chart svg {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+
+  .chart-main .panel-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* The plot takes the slack; the legend keeps its own height, otherwise a
+     100%-tall svg pushes it outside the card. */
+  .chart-main .chart {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .chart-main .chart svg {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+    max-height: 100%;
+  }
+
+  .chart-main .legend {
+    flex: none;
+  }
+
+  .page-analytics {
+    --analytics-split: 2.1fr 1fr;
+    gap: var(--space-3);
+  }
+
+  .page-analytics .tiles {
+    display: grid;
+    grid-template-columns: var(--analytics-split);
+    gap: var(--space-3);
+  }
+
+  .tiles-main > * {
+    min-width: 0;
+  }
+
+  .tiles-main {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .page-analytics .tile {
+    padding: var(--space-3);
+  }
+
+  .page-analytics .tile-value {
+    font-size: 1.5rem;
+  }
+}
+
+/* Under that, the page behaves normally and scrolls. */
+@media (max-width: 999px) {
+  .analytics-body,
+  .analytics-side,
+  .analytics-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .tiles-main {
+    display: contents;
+  }
+}
+
+/* ---------- share bars ----------
+   Part-to-whole as rows: label, bar, figure. Reads like the tables it sits
+   beside, and never asks anyone to judge an angle. */
+
+.share-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.share-row {
+  display: grid;
+  grid-template-columns: minmax(0, 12rem) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.share-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.share-track {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-soft);
+  overflow: hidden;
+}
+
+.share-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.share-value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.share-pct {
+  min-width: 3rem;
+  text-align: right;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.chart-span {
+  margin: 0.15rem 0 0;
+  text-transform: capitalize;
+}
+
+@media (max-width: 560px) {
+  .share-row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .share-track {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .share-fill {
+    transition: none;
+  }
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.table-wrap .data-table {
+  margin-top: 0;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 0.7rem 0.75rem;
+  border-bottom: 1px solid var(--line-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table tbody tr:last-child th,
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr {
+  transition: background 0.14s ease;
+}
+
+.data-table tbody tr:hover {
+  background: var(--surface-sunken);
+}
+
+/* Every table header is left aligned, whatever its body cells do. */
+.data-table th {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+}
+
+/* ---------- printed sheet ---------- */
+
+/* The sheet is a fixed 297mm wide. If the screen cannot fit it, scroll inside
+   this box — the page itself hides horizontal overflow, so it would otherwise
+   just be cut off. */
+.sheet-wrap {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 297mm;
+  background: #fff;
+  color: #000;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10mm 8mm;
+  font-size: 9pt;
+  line-height: 1.3;
+}
+
+/* two halves with a cut line between them */
+.sheet-wide {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  align-items: start;
+}
+
+.sheet-half {
+  padding: 0 6mm;
+  min-width: 0;
+}
+
+/* On a phone the landscape preview would squeeze two A4 halves into one narrow
+   column each; stack them for reading. Print is untouched. */
+@media screen and (max-width: 1150px) {
+  .sheet-wide {
+    grid-template-columns: 1fr;
+  }
+
+  .sheet-half:first-child {
+    border-right: none;
+    border-bottom: 1px dashed #000;
+    padding-bottom: 6mm;
+    margin-bottom: 6mm;
+  }
+}
+
+.sheet-half:first-child {
+  border-right: 1px dashed #000;
+}
+
+.sheet-half-customer {
+  display: flex;
+  flex-direction: column;
+}
+
+/* payment summary on the customer slip */
+.pay-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4mm;
+}
+
+.pay-table th,
+.pay-table td {
+  border-bottom: 1px solid #000;
+  padding: 1.6mm 2mm;
+  text-align: left;
+  font-size: 11pt;
+  font-weight: 400;
+}
+
+.pay-table td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pay-total th,
+.pay-total td {
+  font-weight: 700;
+  font-size: 13pt;
+  border-bottom: 2px solid #000;
+}
+
+.sheet-qr {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin-top: auto;
+  padding-top: 5mm;
+}
+
+.qr {
+  flex: none;
+  display: block;
+}
+
+.sheet-qr-title {
+  margin: 0;
+  font-size: 10pt;
+  font-weight: 700;
+}
+
+.sheet-qr-note {
+  margin: 1mm 0 0;
+  font-size: 9pt;
+}
+
+.sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 3mm;
+  border-bottom: 2px solid #000;
+}
+
+.sheet-shop {
+  margin: 0;
+  font-size: 12.5pt;
+}
+
+.sheet-shop-phone {
+  margin: 0;
+  font-size: 10pt;
+}
+
+.sheet-kicker {
+  margin: 0.8mm 0 0;
+  font-size: 7.5pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sheet-id {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sheet-id-label {
+  display: block;
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sheet-id strong {
+  font-size: 11pt;
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet-facts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.6mm 5mm;
+  padding: 3mm 0;
+  border-bottom: 1px solid #000;
+}
+
+/* label left, value right, on one line */
+.fact {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2mm;
+  border-bottom: 0.2mm dotted #999;
+  padding-bottom: 0.8mm;
+}
+
+.fact-label {
+  flex: none;
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #444;
+}
+
+.fact-value {
+  font-size: 10pt;
+  font-weight: 700;
+  text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.sheet-body {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 6mm;
+  padding: 4mm 0;
+  border-bottom: 1px solid #000;
+}
+
+.sheet h2 {
+  font-size: 7.5pt;
+  color: #000;
+  margin: 0 0 2mm;
+}
+
+.sheet-unit {
+  font-weight: 400;
+}
+
+.measure-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.measure-table th,
+.measure-table td {
+  border: 1px solid #000;
+  padding: 1mm 1.6mm;
+  text-align: left;
+  font-size: 9pt;
+}
+
+.measure-table th {
+  font-weight: 400;
+  width: 62%;
+}
+
+.measure-table td {
+  font-weight: 700;
+  font-size: 10.5pt;
+  font-variant-numeric: tabular-nums;
+}
+
+/* unit rides quietly beside every figure */
+.measure-unit {
+  font-size: 9pt;
+  font-weight: 400;
+}
+
+.sheet-photo {
+  width: 100%;
+  max-height: 85mm;
+  object-fit: contain;
+  border: 1px solid #000;
+  margin-bottom: 3mm;
+}
+
+.sheet-empty {
+  margin: 0;
+}
+
+/* Jobs the tailor ticks: an empty box, the request, the value. */
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 3mm 0;
+}
+
+.task-table th,
+.task-table td {
+  border: 1px solid #000;
+  padding: 1.4mm 2mm;
+  text-align: left;
+  font-size: 9pt;
+  vertical-align: top;
+}
+
+.task-table th {
+  width: 26mm;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: 7.5pt;
+  letter-spacing: 0.05em;
+}
+
+.task-tick {
+  width: 8mm;
+  height: 8mm;
+}
+
+.task-value {
+  font-weight: 700;
+}
+
+.sheet-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 3mm;
+  padding-top: 4mm;
+  font-size: 10pt;
+}
+
+.sheet-money {
+  display: flex;
+  gap: 5mm;
+  flex-wrap: wrap;
+}
+
+.sheet-signs {
+  display: flex;
+  gap: 5mm;
+  flex-wrap: wrap;
+}
+
+/* ---------- print ---------- */
+
+@page {
+  /* One landscape sheet: workshop copy left, customer slip right. Explicit
+     dimensions, since the `A4 landscape` keyword pair is ignored by some
+     print paths and silently falls back to portrait. */
+  size: 297mm 210mm;
+  margin: 8mm;
+}
+
+@media print {
+  :root {
+    background: #fff;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .app-main,
+  .page {
+    padding: 0;
+    margin: 0;
+    max-width: none;
+    gap: 0;
+  }
+
+  .sheet {
+    max-width: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  /* both halves must land on the one landscape page */
+  .sheet-wide {
+    break-inside: avoid;
+  }
+
+  .sheet-photo {
+    max-height: 55mm;
+  }
+
+  .measure-table {
+    break-inside: avoid;
+  }
+}
+
+/* Landscape tablet (Lenovo ~1200 x 800 CSS px): keep the three columns but
+   pull the padding and type in so nothing needs scrolling. */
+@media (max-width: 1100px) {
+  .kiosk-screen {
+    min-height: 0;
+    gap: 1.4rem;
+    padding: 1.6rem 1.6rem 1.1rem;
+  }
+
+  .kiosk-title {
+    font-size: 1.8rem;
+  }
+
+  .kiosk-clock {
+    font-size: 1.3rem;
+  }
+
+  .kiosk-grid {
+    gap: 0.9rem;
+  }
+
+  .kiosk-tile {
+    min-height: 132px;
+    padding: 1.1rem 1.15rem;
+  }
+
+  .kiosk-new .kiosk-tile-label,
+  .kiosk-analytics .kiosk-tile-label {
+    font-size: 1.2rem;
+  }
+}
+
+/* Portrait tablet: the header stacks, the grid drops to two columns with the
+   primary action across the top. */
+@media (max-width: 900px) {
+  .kiosk-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .kiosk-time,
+  .kiosk-meta {
+    position: static;
+  }
+
+  .kiosk-brand {
+    order: 2;
+  }
+
+  .kiosk-meta {
+    order: 3;
+  }
+
+  .kiosk-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'new new'
+      'history status'
+      'analytics analytics';
+  }
+}
+
+@media (max-width: 560px) {
+  .kiosk-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'new'
+      'history'
+      'status'
+      'analytics';
+  }
+
+  .kiosk-screen {
+    padding: 1.2rem 1rem 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .sheet-body {
+    grid-template-columns: 1fr;
+  }
+
+  .sheet-facts {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------- phone ----------
+   18px root is sized for the shop tablet; on a phone it costs too much width. */
+@media (max-width: 560px) {
+  :root {
+    font-size: 16px;
+  }
+
+  .app-main {
+    padding: var(--space-3) var(--space-3) var(--space-4);
+  }
+
+  .card {
+    padding: var(--space-3);
+  }
+
+  h1 {
+    font-size: 1.7rem;
+  }
+
+  .kiosk-head {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .kiosk-time,
+  .kiosk-meta {
+    align-items: center;
+  }
+
+  .kiosk-title {
+    font-size: 1.5rem;
+  }
+
+  /* four steps do not fit side by side — scroll the rail instead of crushing it */
+  .steps {
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .step {
+    flex: 0 0 96px;
+    scroll-snap-align: center;
+  }
+
+  .step-dot {
+    width: 58px;
+    height: 58px;
+    font-size: 1rem;
+  }
+
+  .step + .step::before {
+    top: 28px;
+  }
+
+  .step-label {
+    font-size: 0.72rem;
+  }
+
+  .form-actions .btn {
+    flex: 1 1 100%;
+  }
+
+  .order-card {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
