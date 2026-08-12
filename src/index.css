@@ -2368,7 +2368,7 @@ a.meta-chip:focus-visible {
 .chart .axis {
   fill: var(--ink-soft);
   font-family: var(--font-body);
-  font-size: 11px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2428,10 +2428,11 @@ a.meta-chip:focus-visible {
   color: var(--ink-soft);
 }
 
-/* 31 day numbers on one axis: small type, tight tracking, so each stands
-   apart instead of running into its neighbour. */
+/* 31 day numbers on one axis: tight tracking so each stands apart instead of
+   running into its neighbour. The type is still sized to be read at arm's
+   length on the shop tablet — a day number nobody can make out is no axis. */
 .chart-stack .axis {
-  font-size: 9px;
+  font-size: 13px;
   letter-spacing: -0.02em;
 }
 
