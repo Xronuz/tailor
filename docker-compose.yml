@@ -5,7 +5,7 @@ services:
     container_name: tailor
     restart: unless-stopped
     ports:
-      - "4000:4000"
+      - "127.0.0.1:8100:4000"
     volumes:
       # Orders survive rebuilds and redeploys because they live here.
       - tailor-data:/data
